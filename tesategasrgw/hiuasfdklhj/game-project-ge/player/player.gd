@@ -5,10 +5,19 @@ const JUMP_VELOCITY = 4.5
 const MOUSE_SENSITIVITY = 0.003
 
 var voice_input := Vector2.ZERO
+@onready var speech_status: Label = $SpeechStatusLayer/SpeechStatus
+@onready var speech_text: Label = $SpeechStatusLayer/SpeechText
+@onready var speech_command: Label = $SpeechStatusLayer/SpeechCommand
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	SpeechManager.speech_result.connect(_on_speech)
+	SpeechManager.speech_error.connect(_on_speech_error)
+	SpeechManager.listening_started.connect(_on_listening_started)
+	SpeechManager.listening_stopped.connect(_on_listening_stopped)
+	if not OS.has_feature("web"):
+		speech_status.text = "Speech input: export to Web to enable"
+		speech_command.text = "Command: waiting for speech"
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
@@ -49,14 +58,32 @@ func _physics_process(delta: float) -> void:
 
 func _on_speech(text: String) -> void:
 	var command := text.to_lower().strip_edges().replace(".", "")
+	speech_text.text = "Decoded text: " + text
 	match command:
 		"forward", "move forward", "go forward":
 			voice_input = Vector2.UP
+			speech_command.text = "Command: moving forward"
 		"back", "backward", "move backward", "go backward":
 			voice_input = Vector2.DOWN
+			speech_command.text = "Command: moving backward"
 		"left", "move left", "go left":
 			voice_input = Vector2.LEFT
+			speech_command.text = "Command: moving left"
 		"right", "move right", "go right":
 			voice_input = Vector2.RIGHT
+			speech_command.text = "Command: moving right"
 		"stop", "stop moving", "halt":
 			voice_input = Vector2.ZERO
+			speech_command.text = "Command: stopped"
+		_:
+			speech_command.text = "Command: not recognized"
+
+func _on_speech_error(error: String) -> void:
+	speech_status.text = "Speech error: " + error
+	speech_command.text = "Command: unavailable"
+
+func _on_listening_started() -> void:
+	speech_status.text = "Listening..."
+
+func _on_listening_stopped() -> void:
+	speech_status.text = "Hold V to speak"

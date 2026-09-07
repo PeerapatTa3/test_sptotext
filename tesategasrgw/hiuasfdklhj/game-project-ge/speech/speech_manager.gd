@@ -7,7 +7,7 @@ signal listening_stopped
 
 var is_available := false
 var is_listening := false
-var _callback: Callable
+var _callback: JavaScriptObject
 
 func _ready() -> void:
 	if not OS.has_feature("web"):

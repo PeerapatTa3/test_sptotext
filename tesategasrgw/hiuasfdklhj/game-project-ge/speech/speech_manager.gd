@@ -86,7 +86,15 @@ func stop_listening() -> void:
 
 	JavaScriptBridge.eval("window.__godotSpeech.stop()", true)
 
-func _on_browser_event(event_type: String, value: String = "") -> void:
+func _on_browser_event(args: Array) -> void:
+	if args.is_empty():
+		return
+
+	var event_type := str(args[0])
+	var value := ""
+	if args.size() > 1:
+		value = str(args[1])
+
 	match event_type:
 		"result":
 			var text := value.strip_edges()

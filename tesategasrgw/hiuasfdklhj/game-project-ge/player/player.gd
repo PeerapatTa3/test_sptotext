@@ -28,10 +28,17 @@ func _input(event: InputEvent) -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	if event is InputEventMouseButton and event.pressed:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	if event.is_action_pressed("voice_listen"):
+
+	var voice_pressed := event.is_action_pressed("voice_listen")
+	var voice_released := event.is_action_released("voice_listen")
+	if event is InputEventKey and event.physical_keycode == KEY_V:
+		voice_pressed = voice_pressed or event.pressed
+		voice_released = voice_released or not event.pressed
+
+	if voice_pressed:
 		speech_status.text = "V pressed - requesting microphone..."
 		SpeechManager.start_listening()
-	if event.is_action_released("voice_listen"):
+	if voice_released:
 		speech_status.text = "V released - stopping listening..."
 		SpeechManager.stop_listening()
 

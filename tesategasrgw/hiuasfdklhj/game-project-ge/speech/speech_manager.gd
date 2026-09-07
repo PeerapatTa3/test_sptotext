@@ -47,8 +47,20 @@ func _ready() -> void:
 
 			window.__godotSpeech = {
 				available: true,
-				start: () => recognition.start(),
-				stop: () => recognition.stop()
+				start: () => {
+					try {
+						recognition.start();
+					} catch (error) {
+						window.godotSpeechEvent("error", error.name || "Unable to start speech recognition");
+					}
+				},
+				stop: () => {
+					try {
+						recognition.stop();
+					} catch (error) {
+						window.godotSpeechEvent("error", error.name || "Unable to stop speech recognition");
+					}
+				}
 			};
 		})();
 	""", true)

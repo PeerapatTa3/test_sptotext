@@ -29,8 +29,10 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	if event.is_action_pressed("voice_listen"):
+		speech_status.text = "V pressed - requesting microphone..."
 		SpeechManager.start_listening()
 	if event.is_action_released("voice_listen"):
+		speech_status.text = "V released - stopping listening..."
 		SpeechManager.stop_listening()
 
 func _physics_process(delta: float) -> void:
